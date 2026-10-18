@@ -1,0 +1,20 @@
+#History lists
+
+[image_list]
+"/home/nestor784/Imágenes/wallpaper-dandadan.jpg"
+
+[shortcuts]
+"Inicio[path]/home/nestor784"
+"Escritorio[path]/home/nestor784/Desktop"
+"Colecciones[path]/home/nestor784/.local/share/geeqie/collections"
+
+[path_list]
+"/home/nestor784"
+"/home/nestor784/Imágenes"
+
+[pan_view_options]
+"use_exif_date[INT]:0"
+"info_image_size[INT]:1"
+"info_includes_exif[INT]:1"
+
+#end

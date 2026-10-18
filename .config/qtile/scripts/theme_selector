@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+
+## Author: Nestor
+#
+## Rofi : Qtile theme selector
+#
+## Themes
+#
+## alice 
+
+dir="$HOME/.config/qtile/scripts"
+dirthemes="$HOME/.config/qtile/themes"
+dircore="$HOME/.config/qtile/core"
+theme='window_style'
+
+# CMDs
+bodytext="Choose the theme:"
+
+# Options
+alice='󰓥 ソードアート・オンライン'
+ttgl='󰿗 天元突破グレンラガン'
+hack=' コードギアス 反逆のルルーシュ'
+nice='󰩃 さくら荘のペットな彼女'
+ghibli='󱣻 千と千尋の神隠し'
+yes=' Yes'
+no=' No'
+
+# Interfaz
+rofi_cmd() {
+	rofi -dmenu \
+		-p "$bodytext" \
+		-mesg "$bodytext" \
+		-theme ${dir}/${theme}.rasi
+}
+
+run_rofi() {
+	echo -e "$alice\n$ttgl\n$hack\n$nice\n$ghibli" | rofi_cmd
+}
+
+confirm_cmd() {
+	rofi -theme-str 'window {location: center; anchor: center; fullscreen: false; width: 250px;}' \
+		-theme-str 'mainbox {children: [ "message", "listview" ];}' \
+		-theme-str 'listview {columns: 2; lines: 1;}' \
+		-theme-str 'element-text {horizontal-align: 0.5;}' \
+		-theme-str 'textbox {horizontal-align: 0.5;}' \
+		-dmenu \
+		-p 'Confirmation' \
+		-mesg 'Are you Sure?' \
+		-theme ${dir}/${theme}.rasi
+}
+
+confirm_exit() {
+	echo -e "$yes\n$no" | confirm_cmd
+}
+
+run_cmd() {
+	selected="$(confirm_exit)"
+	if [[ "$selected" == "$yes" ]]; then
+		killall picom
+		killall dunst
+		if [[ $1 == '--alice' ]]; then
+			thname="alice"
+			thvivid="snazzy"
+			thkitty="TokyoNightStorm"
+			thspotify="Matte"
+			thsposcheme="Gray-Dark3"
+		elif [[ $1 == '--ttgl' ]]; then
+			thname="ttgl"
+			thvivid="lava"
+			thkitty="Earthsong"
+			thspotify="Dreary"
+			thsposcheme="Psycho"
+		elif [[ $1 == '--hack' ]]; then
+			thname="hack"
+			thvivid="catppuccin-frappe"
+			thkitty="Lavandula"
+			thspotify="Sleek"
+			thsposcheme="Elementary"
+		elif [[ $1 == '--nice' ]]; then
+			thname="nice"
+			thvivid="nord"
+			thkitty="WildCherry"
+			thspotify="Flow"
+			thsposcheme="Violet"
+		elif [[ $1 == '--ghibli' ]]; then
+			thname="ghibli"
+			thvivid="solarized-light"
+			thkitty="Mathias"
+			thspotify="Ziro"
+			thsposcheme="Blue\ Dark"
+		fi
+		ln -sf ${dirthemes}/${thname}/${thname}.py ${dircore}/theme.py 
+		echo -e "export LS_COLORS=\"\$(vivid generate ${thvivid})\"" >| ~/.config/kitty/.ls_config
+		ln -sf ${dirthemes}/${thname}/picom.conf ~/.config/picom/picom.conf
+		ln -sf ${dirthemes}/${thname}/dunstrc ~/.config/dunst/dunstrc
+		ln -sf ${dirthemes}/${thname}/neo${thname}.conf ~/.config/neofetch/config.conf
+		ln -sf ~/.config/kitty/kitty-themes/themes/${thkitty}.conf ~/.config/kitty/theme.conf
+		feh --bg-fill --randomize ${dirthemes}/${thname}/wallpapers/*
+		picom --config $HOME/.config/picom/picom.conf &
+		dunst &
+		sleep 0.5
+		sleep 0.5 && xdotool key --clearmodifiers super+ctrl+r
+		#spicetify config current_theme ${thspotify} color_scheme ${thsposcheme}
+		#spicetify apply
+		#qtile run-cmd qtile cmd-obj -o cmd -f reload_config
+		#qtile cmd-obj -o cmd -f reload_config
+	else
+		exit 0
+	fi
+}
+
+#Actions
+chosen="$(run_rofi)"
+case ${chosen} in
+	$alice)
+		run_cmd --alice
+	;;
+	$ttgl)
+		run_cmd --ttgl
+	;;
+	$hack)
+		run_cmd --hack
+	;;
+	$nice)
+		run_cmd --nice
+	;;
+	$ghibli)
+		run_cmd --ghibli
+	;;
+esac
